@@ -36,7 +36,8 @@ steps:
     - mv ./buildx-v0.5.1.linux-arm64 /usr/local/libexec/docker/cli-plugins/docker-buildx
     - chmod a+x /usr/local/libexec/docker/cli-plugins/docker-buildx
     - ls -lrt /var/run/host/
-    - ls -lrt /var/run/    
+    - ls -lrt /var/run/  
+    - export DOCKER_HOST=unix:///var/run/host/docker.sock
     - docker help
     - docker version
     - docker buildx inspect
