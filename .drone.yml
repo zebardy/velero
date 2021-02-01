@@ -18,12 +18,18 @@ steps:
     image: plugins/docker
     commands:
     - echo "testing scripts"
-    - apk add make git grep
-    - ls -lrt /usr/libexec/
-    - ls -lrt /usr/lib/
-    - ls -lrt /usr/local/lib/
-    - ls -lrta $HOME/
-    - which grep
+    - apk add make git grep wget
+    - ls -lrt /usr/libexec/ | grep docker
+    - ls -lrt /usr/lib/ | grep docker
+    - ls -lrt /usr/local/libexec/
+    - ls -lrt /usr/local/lib/ | grep docker
+    - ls -lrta $HOME/ | grep docker
+    - which docker
+    - docker help
+    - mkdir -p /usr/local/libexec/docker/cli-plugins/
+    - wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-arm64
+    - mv ./buildx-v0.5.1.linux-arm64 /usr/local/libexec/docker/cli-plugins/docker-buildx
+    - docker help
     - make all-containers
     - echo "success"
     settings:
