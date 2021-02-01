@@ -18,11 +18,12 @@ steps:
     image: plugins/docker
     commands:
     - echo "testing scripts"
-    - apk add make git
-    - ls -lrt /usr/libexec/ | grep docker
-    - ls -lrt /usr/lib/ | grep docker
-    - ls -lrt /usr/local/lib/ | grep docker
-    - ls -lrta $HOME/ | grep docker
+    - apk add make git grep
+    - ls -lrt /usr/libexec/
+    - ls -lrt /usr/lib/
+    - ls -lrt /usr/local/lib/
+    - ls -lrta $HOME/
+    - which grep
     - make all-containers
     - echo "success"
     settings:
