@@ -20,6 +20,7 @@ steps:
     commands:
     - echo "testing scripts"
     - make all-containers
+    - echo "success"
     settings:
       username:
         from_secret: docker_username
