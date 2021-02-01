@@ -17,6 +17,9 @@ trigger:
 steps:
   - name: docker
     image: plugins/docker
+    commands:
+    - echo "testing scripts"
+    - make all-containers
     settings:
       username:
         from_secret: docker_username
