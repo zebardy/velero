@@ -53,7 +53,10 @@ FROM ubuntu:focal
 
 LABEL maintainer="Nolan Brubaker <brubakern@vmware.com>"
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -qq -y ca-certificates tzdata && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -qq -y ca-certificates
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -qq -y tzdata
+RUN rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /output /
 
