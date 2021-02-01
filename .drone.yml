@@ -19,6 +19,10 @@ steps:
     commands:
     - echo "testing scripts"
     - apk add make git
+    - ls -lrt /usr/libexec/docker/
+    - ls -lrt /usr/lib/docker/
+    - ls -lrt /usr/local/lib/docker/
+    - ls -lrt $HOME/.docker/
     - make all-containers
     - echo "success"
     settings:
