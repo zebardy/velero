@@ -36,6 +36,8 @@ steps:
     - chmod a+x /usr/local/libexec/docker/cli-plugins/docker-buildx
     - export DOCKER_HOST=unix:///var/run/host/docker.sock
     - make all-containers REGISTRY=$REGISTRY
+    - docker login --password $PASSWORD --username $USERNAME
+    - docker push $REGISTRY/velero
     - echo "success"
 volumes:
 - name: var_run
