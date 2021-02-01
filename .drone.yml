@@ -16,6 +16,7 @@ trigger:
 steps:
   - name: docker
     image: plugins/docker
+    privileged: true
     commands:
     - echo "testing scripts"
     - apk add make git grep wget
@@ -31,6 +32,7 @@ steps:
     - mv ./buildx-v0.5.1.linux-arm64 /usr/local/libexec/docker/cli-plugins/docker-buildx
     - chmod a+x /usr/local/libexec/docker/cli-plugins/docker-buildx
     - docker help
+    - ls -lrt /var/run/
     - /usr/local/bin/dockerd-entrypoint.sh docker version
     - /usr/local/bin/dockerd-entrypoint.sh docker buildx inspect
     - /usr/local/bin/dockerd-entrypoint.sh make all-containers
