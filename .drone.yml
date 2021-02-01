@@ -14,30 +14,29 @@ trigger:
     - push
 
 steps:
-  - name: docker
+  - name: arm64v8/docker
     volumes:
     - name: var_run
       path: var/run/host
     image: docker
     privileged: true
+    environment: 
+      REGISTRY:
+        from_secret: docker_registry
+      USERNAME:
+        from_secret: docker_username
+      PASSWORD:
+        from_secret: docker_password
     commands:
     - echo "testing scripts"
-    - apk add make git grep wget
+    - apk add make git wget
     - mkdir -p /usr/local/libexec/docker/cli-plugins/
     - wget --show-progress=off https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-arm64
     - mv ./buildx-v0.5.1.linux-arm64 /usr/local/libexec/docker/cli-plugins/docker-buildx
     - chmod a+x /usr/local/libexec/docker/cli-plugins/docker-buildx
-    - ls -lrt /var/run/host/
-    - ls -lrt /var/run/  
     - export DOCKER_HOST=unix:///var/run/host/docker.sock
-    - make all-containers
+    - make all-containers REGISTRY=$REGISTRY
     - echo "success"
-    settings:
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      repo: zebardy/velero
 volumes:
 - name: var_run
   host:
