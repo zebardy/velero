@@ -175,6 +175,13 @@ func (c *podVolumeRestoreController) podHandler(obj interface{}) {
 		return
 	}
 
+    initContainerStatusCount := len(pod.Status.InitContainerStatuses)
+	log.Debugf(`Number of init containers with a status - %d`,initContainerStatusCount)
+
+	for index, element := range pod.Status.InitContainerStatuses {
+        log.Debugf(`Init container status at index %d is for init container %s`,index,element.Name)
+    }
+
 	if !isResticInitContainerRunning(pod) {
 		log.Debug("Pod is not running restic-wait init container, not enqueuing restores for pod")
 		return
