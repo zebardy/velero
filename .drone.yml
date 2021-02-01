@@ -16,7 +16,6 @@ trigger:
 steps:
   - name: docker
     volumes:
-#    - /var/run/docker.sock:/var/run/docker.sock
     - name: var_run
       path: var/run/host
     image: docker
@@ -24,13 +23,6 @@ steps:
     commands:
     - echo "testing scripts"
     - apk add make git grep wget
-#    - ls -lrt /usr/libexec/ | grep docker || true
-#    - ls -lrt /usr/lib/ | grep docker || true
-#    - ls -lrt /usr/local/libexec/ | grep docker || true
-#    - ls -lrt /usr/local/lib/ | grep docker || true
-#    - ls -lrta $HOME/ | grep docker || true
-#    - which docker
-#    - docker help
     - mkdir -p /usr/local/libexec/docker/cli-plugins/
     - wget --show-progress=off https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-arm64
     - mv ./buildx-v0.5.1.linux-arm64 /usr/local/libexec/docker/cli-plugins/docker-buildx
@@ -38,9 +30,6 @@ steps:
     - ls -lrt /var/run/host/
     - ls -lrt /var/run/  
     - export DOCKER_HOST=unix:///var/run/host/docker.sock
-    - docker help
-    - docker version
-    - docker buildx inspect
     - make all-containers
     - echo "success"
     settings:
