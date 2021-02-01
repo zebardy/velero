@@ -35,7 +35,7 @@ steps:
     - mv ./buildx-v0.5.1.linux-arm64 /usr/local/libexec/docker/cli-plugins/docker-buildx
     - chmod a+x /usr/local/libexec/docker/cli-plugins/docker-buildx
     - export DOCKER_HOST=unix:///var/run/host/docker.sock
-    - make all-containers REGISTRY=$REGISTRY
+    - make all-containers REGISTRY=$REGISTRY ARCH=linux-arm64
     - docker login --password $PASSWORD --username $USERNAME
     - docker push $REGISTRY/velero:main
     - docker push $REGISTRY/velero-restic-restore-helper:main
