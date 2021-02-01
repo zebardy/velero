@@ -18,6 +18,7 @@ steps:
     image: plugins/docker
     commands:
     - echo "testing scripts"
+    - apk add make
     - make all-containers
     - echo "success"
     settings:
