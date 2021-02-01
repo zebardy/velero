@@ -37,7 +37,7 @@ steps:
     - export DOCKER_HOST=unix:///var/run/host/docker.sock
     - make all-containers REGISTRY=$REGISTRY
     - docker login --password $PASSWORD --username $USERNAME
-    - docker push $REGISTRY/velero
+    - docker push $REGISTRY/velero:main
     - echo "success"
 volumes:
 - name: var_run
