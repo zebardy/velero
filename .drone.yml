@@ -27,8 +27,9 @@ steps:
     - which docker
     - docker help
     - mkdir -p /usr/local/libexec/docker/cli-plugins/
-    - wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-arm64
+    - wget --show-progress=false https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-arm64
     - mv ./buildx-v0.5.1.linux-arm64 /usr/local/libexec/docker/cli-plugins/docker-buildx
+    - chmod a+x /usr/local/libexec/docker/cli-plugins/docker-buildx
     - docker help
     - make all-containers
     - echo "success"
