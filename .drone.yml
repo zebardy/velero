@@ -38,6 +38,7 @@ steps:
     - make all-containers REGISTRY=$REGISTRY
     - docker login --password $PASSWORD --username $USERNAME
     - docker push $REGISTRY/velero:main
+    - docker push $REGISTRY/velero-restic-restore-helper:main
     - echo "success"
 volumes:
 - name: var_run
