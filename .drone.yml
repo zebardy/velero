@@ -19,11 +19,11 @@ steps:
     commands:
     - echo "testing scripts"
     - apk add make git grep wget
-    - ls -lrt /usr/libexec/ | grep docker
-    - ls -lrt /usr/lib/ | grep docker
-    - ls -lrt /usr/local/libexec/
-    - ls -lrt /usr/local/lib/ | grep docker
-    - ls -lrta $HOME/ | grep docker
+    - ls -lrt /usr/libexec/ | grep docker || true
+    - ls -lrt /usr/lib/ | grep docker || true
+    - ls -lrt /usr/local/libexec/ | grep docker || true
+    - ls -lrt /usr/local/lib/ | grep docker || true
+    - ls -lrta $HOME/ | grep docker || true
     - which docker
     - docker help
     - mkdir -p /usr/local/libexec/docker/cli-plugins/
