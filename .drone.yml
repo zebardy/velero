@@ -14,11 +14,11 @@ trigger:
     - push
 
 steps:
-  - name: arm64v8/docker
+  - name: docker
     volumes:
     - name: var_run
       path: var/run/host
-    image: docker
+    image: arm64v8/docker
     privileged: true
     environment: 
       REGISTRY:
