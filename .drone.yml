@@ -31,6 +31,8 @@ steps:
     - mv ./buildx-v0.5.1.linux-arm64 /usr/local/libexec/docker/cli-plugins/docker-buildx
     - chmod a+x /usr/local/libexec/docker/cli-plugins/docker-buildx
     - docker help
+    - docker version
+    - docker buildx inspect
     - make all-containers
     - echo "success"
     settings:
