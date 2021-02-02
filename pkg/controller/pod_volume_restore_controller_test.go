@@ -193,6 +193,7 @@ func TestPVRHandler(t *testing.T) {
 				Status: corev1api.PodStatus{
 					InitContainerStatuses: []corev1api.ContainerStatus{
 						{
+						    Name: restic.InitContainer,
 							State: corev1api.ContainerState{
 								Running: &corev1api.ContainerStateRunning{
 									StartedAt: metav1.Time{Time: time.Now()},
@@ -261,6 +262,7 @@ func TestPodHandler(t *testing.T) {
 				Status: corev1api.PodStatus{
 					InitContainerStatuses: []corev1api.ContainerStatus{
 						{
+						    Name: restic.InitContainer,
 							State: corev1api.ContainerState{
 								Running: &corev1api.ContainerStateRunning{StartedAt: metav1.Time{Time: time.Now()}},
 							},
@@ -510,11 +512,13 @@ func TestIsResticContainerRunning(t *testing.T) {
 				Status: corev1api.PodStatus{
 					InitContainerStatuses: []corev1api.ContainerStatus{
 						{
+						    Name: "non-restic-init",
 							State: corev1api.ContainerState{
 								Running: &corev1api.ContainerStateRunning{StartedAt: metav1.Time{Time: time.Now()}},
 							},
 						},
 						{
+						    Name: restic.InitContainer,
 							State: corev1api.ContainerState{
 								Running: &corev1api.ContainerStateRunning{StartedAt: metav1.Time{Time: time.Now()}},
 							},
@@ -576,11 +580,13 @@ func TestIsResticContainerRunning(t *testing.T) {
 				Status: corev1api.PodStatus{
 					InitContainerStatuses: []corev1api.ContainerStatus{
 						{
+						    Name: restic.InitContainer,
 							State: corev1api.ContainerState{
 								Running: &corev1api.ContainerStateRunning{StartedAt: metav1.Time{Time: time.Now()}},
 							},
 						},
 						{
+						    Name: "non-restic-init",
 							State: corev1api.ContainerState{
 								Running: &corev1api.ContainerStateRunning{StartedAt: metav1.Time{Time: time.Now()}},
 							},
