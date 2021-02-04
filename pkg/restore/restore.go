@@ -1173,6 +1173,10 @@ func (ctx *restoreContext) restoreItem(obj *unstructured.Unstructured, groupReso
 	}
 
     ctx.log.Debug("DEBUGGING: test for restic backup volumes")
+    ctx.log.Debugf(`DEBUGGING: groupResource %s length volume backups for pod %d`, groupResource, len(restic.GetVolumeBackupsForPod(ctx.podVolumeBackups, obj)))
+    ctx.log.Debugf(`DEBUGGING: number of pod volume backups %d`, len(ctx.podVolumeBackups))
+    //ctx.log.Debugf(`DEBUGGING: pod %s`, obj.Name)
+
 	if groupResource == kuberesource.Pods && len(restic.GetVolumeBackupsForPod(ctx.podVolumeBackups, obj)) > 0 {
         ctx.log.Debug("DEBUGGING: restic backup volumes found")
 		restorePodVolumeBackups(ctx, createdObj, originalNamespace)
