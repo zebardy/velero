@@ -196,6 +196,8 @@ func (c *podVolumeRestoreController) podHandler(obj interface{}) {
 		return
 	}
 
+	log.Debug("Restic-wait init container running!!!!")
+
 	resticInitContainerIndex := getResticInitContainerIndex(pod)
 	if resticInitContainerIndex > 0 {
 		log.Warnf(`Init containers before the %s container may cause issues
@@ -212,6 +214,8 @@ func (c *podVolumeRestoreController) podHandler(obj interface{}) {
 		return
 	}
 
+	log.Debugf(`PVRs length=%d`, len(pvrs))
+
 	if len(pvrs) == 0 {
 		return
 	}
@@ -225,6 +229,7 @@ func (c *podVolumeRestoreController) podHandler(obj interface{}) {
 		log.Debug("Enqueuing")
 		c.enqueue(pvr)
 	}
+	log.Debug("Done!!!")
 }
 
 func isPVRNew(pvr *velerov1api.PodVolumeRestore) bool {

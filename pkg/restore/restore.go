@@ -1172,7 +1172,9 @@ func (ctx *restoreContext) restoreItem(obj *unstructured.Unstructured, groupReso
 		return warnings, errs
 	}
 
+    ctx.log.Debug("DEBUGGING: test for restic backup volumes")
 	if groupResource == kuberesource.Pods && len(restic.GetVolumeBackupsForPod(ctx.podVolumeBackups, obj)) > 0 {
+        ctx.log.Debug("DEBUGGING: restic backup volumes found")
 		restorePodVolumeBackups(ctx, createdObj, originalNamespace)
 	}
 
@@ -1269,6 +1271,7 @@ func remapClaimRefNS(ctx *restoreContext, obj *unstructured.Unstructured) (bool,
 
 // restorePodVolumeBackups restores the PodVolumeBackups for the given restored pod
 func restorePodVolumeBackups(ctx *restoreContext, createdObj *unstructured.Unstructured, originalNamespace string) {
+    ctx.log.Debug("DEBUGGING: Begining restorePodVolumeBackups")
 	if ctx.resticRestorer == nil {
 		ctx.log.Warn("No restic restorer, not restoring pod's volumes")
 	} else {
@@ -1292,6 +1295,7 @@ func restorePodVolumeBackups(ctx *restoreContext, createdObj *unstructured.Unstr
 				SourceNamespace:  originalNamespace,
 				BackupLocation:   ctx.backup.Spec.StorageLocation,
 			}
+            ctx.log.Debug("DEBUGGING: calling resticRestorer.RestorePodVolumes")
 			if errs := ctx.resticRestorer.RestorePodVolumes(data); errs != nil {
 				ctx.log.WithError(kubeerrs.NewAggregate(errs)).Error("unable to successfully complete restic restores of pod's volumes")
 
