@@ -1175,7 +1175,19 @@ func (ctx *restoreContext) restoreItem(obj *unstructured.Unstructured, groupReso
     ctx.log.Debug("DEBUGGING: test for restic backup volumes")
     ctx.log.Debugf(`DEBUGGING: groupResource %s length volume backups for pod %d`, groupResource, len(restic.GetVolumeBackupsForPod(ctx.podVolumeBackups, obj)))
     ctx.log.Debugf(`DEBUGGING: number of pod volume backups %d`, len(ctx.podVolumeBackups))
-    //ctx.log.Debugf(`DEBUGGING: pod %s`, obj.Name)
+    ctx.log.Debugf(`DEBUGGING: pod %s`, obj.GetName())
+    ctx.log.Debugf(`DEBUGGING: namespace %s`, obj.GetNamespace())
+
+	for _, pvb := range ctx.podVolumeBackups {
+        ctx.log.Debugf(`DEBUGGING: pvb pod %s, pvb namespace %s`, pvb.Spec.Pod.Name, pvb.Spec.Pod.Namespace)
+    }
+
+	for k, _ := range obj.GetAnnotations() {
+        ctx.log.Debugf(`DEBUGGING: pod annotation %s`, k)
+		if strings.HasPrefix(k, "snapshot.velero.io/") {
+            ctx.log.Debug("DEBUGGING: annotation has prefix")
+		}
+	}
 
 	if groupResource == kuberesource.Pods && len(restic.GetVolumeBackupsForPod(ctx.podVolumeBackups, obj)) > 0 {
         ctx.log.Debug("DEBUGGING: restic backup volumes found")
