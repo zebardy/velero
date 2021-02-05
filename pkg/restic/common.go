@@ -96,7 +96,7 @@ func getPodSnapshotAnnotations(obj metav1.Object) map[string]string {
 }
 
 func isPVBMatchPod(pvb *velerov1api.PodVolumeBackup, pod metav1.Object) bool {
-	return pod.GetName() == pvb.Spec.Pod.Name && pod.GetNamespace() == pvb.Spec.Pod.Namespace
+	return (pod.GetName() == pvb.Spec.Pod.Name && pod.GetNamespace() == pvb.Spec.Pod.Namespace) || (pvb.Spec.Pod.UID == pod.GetUID() && pvb.Spec.Pod.UID != "")
 }
 
 // GetVolumeBackupsForPod returns a map, of volume name -> snapshot id,

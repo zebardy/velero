@@ -95,6 +95,10 @@ func newRestorer(
 
 func (r *restorer) RestorePodVolumes(data RestoreData) []error {
     r.log.Debug("DEBUGGING: begining restic/restorer RestorePodVolumes")
+    r.log.Debugf(`DEBUGGING: pod UID - %s`, data.Pod.UID)
+	for _, pvb := range data.PodVolumeBackups {
+        r.log.Debugf(`DEBUGGING: pvb UID - %s`, pvb.Spec.Pod.UID)
+	}
 	volumesToRestore := GetVolumeBackupsForPod(data.PodVolumeBackups, data.Pod)
 	if len(volumesToRestore) == 0 {
         r.log.Debug("DEBUGGING: no volumes to restore")
