@@ -32,10 +32,12 @@ import (
 )
 
 type RestoreData struct {
-	Restore                         *velerov1api.Restore
-	Pod                             *corev1api.Pod
-	PodVolumeBackups                []*velerov1api.PodVolumeBackup
-	SourceNamespace, BackupLocation string
+	Restore          *velerov1api.Restore
+	Pod              *corev1api.Pod
+	PodVolumeBackups []*velerov1api.PodVolumeBackup
+	SourcePod        *corev1api.Pod
+	//SourceNamespace, BackupLocation string
+	BackupLocation string
 }
 
 // Restorer can execute restic restores of volumes in a pod.
@@ -65,7 +67,7 @@ func newRestorer(
 		ctx:         ctx,
 		repoManager: rm,
 		repoEnsurer: repoEnsurer,
-		log: log,
+		log:         log,
 
 		results: make(map[string]chan *velerov1api.PodVolumeRestore),
 	}
@@ -94,20 +96,20 @@ func newRestorer(
 }
 
 func (r *restorer) RestorePodVolumes(data RestoreData) []error {
-    r.log.Debug("DEBUGGING: begining restic/restorer RestorePodVolumes")
-    r.log.Debugf(`DEBUGGING: pod UID - %s`, data.Pod.UID)
+	r.log.Debug("DEBUGGING: begining restic/restorer RestorePodVolumes")
+	r.log.Debugf(`DEBUGGING: pod UID - %s`, data.Pod.UID)
 	for _, pvb := range data.PodVolumeBackups {
-        r.log.Debugf(`DEBUGGING: pvb UID - %s`, pvb.Spec.Pod.UID)
+		r.log.Debugf(`DEBUGGING: pvb UID - %s`, pvb.Spec.Pod.UID)
 	}
-	volumesToRestore := GetVolumeBackupsForPod(data.PodVolumeBackups, data.Pod)
+	volumesToRestore := GetVolumeBackupsForPod(data.PodVolumeBackups, data.SourcePod)
 	if len(volumesToRestore) == 0 {
-        r.log.Debug("DEBUGGING: no volumes to restore")
+		r.log.Debug("DEBUGGING: no volumes to restore")
 		return nil
 	}
 
-	repo, err := r.repoEnsurer.EnsureRepo(r.ctx, data.Restore.Namespace, data.SourceNamespace, data.BackupLocation)
+	repo, err := r.repoEnsurer.EnsureRepo(r.ctx, data.Restore.Namespace, data.SourcePod.Namespace, data.BackupLocation)
 	if err != nil {
-        r.log.Debug("DEBUGGING: unable to ensure repo")
+		r.log.Debug("DEBUGGING: unable to ensure repo")
 		return []error{err}
 	}
 
@@ -127,9 +129,9 @@ func (r *restorer) RestorePodVolumes(data RestoreData) []error {
 		numRestores int
 	)
 
-    r.log.Debug("DEBUGGING: iterating through volumes to restore")
+	r.log.Debug("DEBUGGING: iterating through volumes to restore")
 	for volume, snapshot := range volumesToRestore {
-        r.log.Debugf(`DEBUGGING: creating pvr for pod %s`, data.Pod.Name)
+		r.log.Debugf(`DEBUGGING: creating pvr for pod %s`, data.Pod.Name)
 		volumeRestore := newPodVolumeRestore(data.Restore, data.Pod, data.BackupLocation, volume, snapshot, repo.Spec.ResticIdentifier)
 
 		if err := errorOnly(r.repoManager.veleroClient.VeleroV1().PodVolumeRestores(volumeRestore.Namespace).Create(context.TODO(), volumeRestore, metav1.CreateOptions{})); err != nil {

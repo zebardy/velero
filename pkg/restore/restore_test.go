@@ -2505,14 +2505,19 @@ func TestRestoreWithRestic(t *testing.T) {
 			for _, pod := range tc.podWithPVBs {
 				tarball.AddItems("pods", pod)
 
+				sourcePod := pod.DeepCopy()
+				//sourcePod.Name = pod.Name
+				//sourcePod.Namespace = pod.Namespace
+
 				// the restore process adds these labels before restoring, so we must add them here too otherwise they won't match
 				pod.Labels = map[string]string{"velero.io/backup-name": tc.backup.Name, "velero.io/restore-name": tc.restore.Name}
 				expectedArgs := restic.RestoreData{
 					Restore:          tc.restore,
 					Pod:              pod,
 					PodVolumeBackups: tc.podVolumeBackups,
-					SourceNamespace:  pod.Namespace,
-					BackupLocation:   "",
+					//SourceNamespace:  pod.Namespace,
+					SourcePod:      sourcePod,
+					BackupLocation: "",
 				}
 				restorer.
 					On("RestorePodVolumes", expectedArgs).

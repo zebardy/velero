@@ -175,21 +175,21 @@ func (c *podVolumeRestoreController) podHandler(obj interface{}) {
 		return
 	}
 
-    initContainerStatusCount := len(pod.Status.InitContainerStatuses)
-	log.Debugf(`Number of init containers with a status - %d`,initContainerStatusCount)
+	initContainerStatusCount := len(pod.Status.InitContainerStatuses)
+	log.Debugf(`Number of init containers with a status - %d`, initContainerStatusCount)
 
 	log.Debugf(`Looking for init container %s`, restic.InitContainer)
 	for index, element := range pod.Status.InitContainerStatuses {
-        log.Debugf(`Init container status at index %d is for init container %s`,index,element.Name)
+		log.Debugf(`Init container status at index %d is for init container %s`, index, element.Name)
 		if element.Name == restic.InitContainer {
-            log.Debug("  Init container is restic init container")
+			log.Debug("  Init container is restic init container")
 		}
-        if element.State.Running != nil {
-		    log.Debug("  This init container is running!")
-	    }
-    }
+		if element.State.Running != nil {
+			log.Debug("  This init container is running!")
+		}
+	}
 
-    log.Debugf(`getResticInitContainerStatusIndex %d`, getResticInitContainerStatusIndex(pod))
+	log.Debugf(`getResticInitContainerStatusIndex %d`, getResticInitContainerStatusIndex(pod))
 
 	if !isResticInitContainerRunning(pod) {
 		log.Debug("Pod is not running restic-wait init container, not enqueuing restores for pod")

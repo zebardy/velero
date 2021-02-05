@@ -1172,31 +1172,32 @@ func (ctx *restoreContext) restoreItem(obj *unstructured.Unstructured, groupReso
 		return warnings, errs
 	}
 
-    ctx.log.Debug("DEBUGGING: test for restic backup volumes")
-    ctx.log.Debugf(`DEBUGGING: groupResource %s length volume backups for pod %d`, groupResource, len(restic.GetVolumeBackupsForPod(ctx.podVolumeBackups, obj)))
-    ctx.log.Debugf(`DEBUGGING: number of pod volume backups %d`, len(ctx.podVolumeBackups))
-    ctx.log.Debugf(`DEBUGGING: object name %s`, obj.GetName())
-    ctx.log.Debugf(`DEBUGGING: object namespace %s`, obj.GetNamespace())
-    ctx.log.Debugf(`DEBUGGING: originalNamespace %s`, originalNamespace)
-    ctx.log.Debugf(`DEBUGGING: namespace %s`, namespace)
-    ctx.log.Debugf(`DEBUGGING: itemFromBackup name %s`, itemFromBackup.GetName())
-    ctx.log.Debugf(`DEBUGGING: itemFromBackup namespace %s`, itemFromBackup.GetNamespace())
+	ctx.log.Info("DEBUGGING: test for restic backup volumes")
+	ctx.log.Infof(`DEBUGGING: groupResource %s length volume backups for pod %d`, groupResource, len(restic.GetVolumeBackupsForPod(ctx.podVolumeBackups, obj)))
+	ctx.log.Infof(`DEBUGGING: number of pod volume backups %d`, len(ctx.podVolumeBackups))
+	ctx.log.Infof(`DEBUGGING: object name %s`, obj.GetName())
+	ctx.log.Infof(`DEBUGGING: object namespace %s`, obj.GetNamespace())
+	ctx.log.Infof(`DEBUGGING: originalNamespace %s`, originalNamespace)
+	ctx.log.Infof(`DEBUGGING: namespace %s`, namespace)
+	ctx.log.Infof(`DEBUGGING: itemFromBackup name %s`, itemFromBackup.GetName())
+	ctx.log.Infof(`DEBUGGING: itemFromBackup namespace %s`, itemFromBackup.GetNamespace())
 
 	for _, pvb := range ctx.podVolumeBackups {
-        ctx.log.Debugf(`DEBUGGING: pvb pod %s, pvb namespace %s`, pvb.Spec.Pod.Name, pvb.Spec.Pod.Namespace)
-    }
+		ctx.log.Infof(`DEBUGGING: pvb pod %s, pvb namespace %s`, pvb.Spec.Pod.Name, pvb.Spec.Pod.Namespace)
+	}
 
-	for k, _ := range obj.GetAnnotations() {
-        ctx.log.Debugf(`DEBUGGING: pod annotation %s`, k)
+	for k := range obj.GetAnnotations() {
+		ctx.log.Infof(`DEBUGGING: pod annotation %s`, k)
 		if strings.HasPrefix(k, "snapshot.velero.io/") {
-            ctx.log.Debug("DEBUGGING: annotation has prefix")
+			ctx.log.Info("DEBUGGING: annotation has prefix")
 		}
 	}
 
 	//if groupResource == kuberesource.Pods && len(restic.GetVolumeBackupsForPod(ctx.podVolumeBackups, obj)) > 0 {
 	if groupResource == kuberesource.Pods && len(restic.GetVolumeBackupsForPod(ctx.podVolumeBackups, itemFromBackup)) > 0 {
-        ctx.log.Debug("DEBUGGING: restic backup volumes found")
-		restorePodVolumeBackups(ctx, createdObj, originalNamespace)
+		ctx.log.Info("DEBUGGING: restic backup volumes found")
+
+		restorePodVolumeBackups(ctx, createdObj, itemFromBackup)
 	}
 
 	if groupResource == kuberesource.Pods {
@@ -1291,8 +1292,9 @@ func remapClaimRefNS(ctx *restoreContext, obj *unstructured.Unstructured) (bool,
 }
 
 // restorePodVolumeBackups restores the PodVolumeBackups for the given restored pod
-func restorePodVolumeBackups(ctx *restoreContext, createdObj *unstructured.Unstructured, originalNamespace string) {
-    ctx.log.Debug("DEBUGGING: Begining restorePodVolumeBackups")
+//func restorePodVolumeBackups(ctx *restoreContext, createdObj *unstructured.Unstructured, originalNamespace string) {
+func restorePodVolumeBackups(ctx *restoreContext, createdObj *unstructured.Unstructured, originalObj *unstructured.Unstructured) {
+	ctx.log.Info("DEBUGGING: Begining restorePodVolumeBackups")
 	if ctx.resticRestorer == nil {
 		ctx.log.Warn("No restic restorer, not restoring pod's volumes")
 	} else {
@@ -1309,14 +1311,24 @@ func restorePodVolumeBackups(ctx *restoreContext, createdObj *unstructured.Unstr
 				return
 			}
 
+			originalPod := new(v1.Pod)
+			if err := runtime.DefaultUnstructuredConverter.FromUnstructured(originalObj.UnstructuredContent(), &originalPod); err != nil {
+				ctx.log.WithError(err).Error("error converting unstructured pod")
+				ctx.resticErrs <- err
+				return
+			}
+	        ctx.log.Infof(`DEBUGGING: originalPod name %s`, originalPod.GetName())
+	        ctx.log.Infof(`DEBUGGING: originalPod namespace %s`, originalPod.GetNamespace())
+
 			data := restic.RestoreData{
 				Restore:          ctx.restore,
 				Pod:              pod,
 				PodVolumeBackups: ctx.podVolumeBackups,
-				SourceNamespace:  originalNamespace,
-				BackupLocation:   ctx.backup.Spec.StorageLocation,
+				//SourceNamespace:  originalNamespace,
+				SourcePod:      originalPod,
+				BackupLocation: ctx.backup.Spec.StorageLocation,
 			}
-            ctx.log.Debug("DEBUGGING: calling resticRestorer.RestorePodVolumes")
+			ctx.log.Info("DEBUGGING: calling resticRestorer.RestorePodVolumes")
 			if errs := ctx.resticRestorer.RestorePodVolumes(data); errs != nil {
 				ctx.log.WithError(kubeerrs.NewAggregate(errs)).Error("unable to successfully complete restic restores of pod's volumes")
 
